@@ -1,14 +1,15 @@
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
 const Food = require("../models/food");
 
-router.get("/birds", (req, res) => {
-  res.send("Birds home page");
+router.get("/foods", async (req, res) => {
+  const allFoods = await Food.find({});
+  res.status(200).send(allFoods);
 });
 
 router.post("/foods", async (req, res) => {
   const { foodData } = req.body;
-  console.log(foodData);
   const newFoodData = new Food({
     foodName: foodData.foodName,
     foodCategory: foodData.foodCategory,
