@@ -1,11 +1,23 @@
+require("dotenv").config();
 const express = require("express");
 const router = express.Router();
-const mongoose = require("mongoose");
 const Food = require("../models/food");
 
 router.get("/foods", async (req, res) => {
   const allFoods = await Food.find({});
   res.status(200).send(allFoods);
+});
+
+router.get("/foodName", async (req, res) => {
+  const { name } = req.query;
+  const item = await Food.findOne({ foodName: name });
+  res.send(item);
+});
+
+router.get("/singleFood", async (req, res) => {
+  const { id } = req.query;
+  const singleFoodItem = await Food.findById(id);
+  res.send(singleFoodItem);
 });
 
 router.post("/foods", async (req, res) => {
