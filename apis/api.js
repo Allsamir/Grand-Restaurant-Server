@@ -21,6 +21,22 @@ router.get("/singleFood", async (req, res) => {
   const singleFoodItem = await Food.findById(id);
   res.send(singleFoodItem);
 });
+
+//For Currentuser's added food items
+
+router.get("/my-added-items", async (req, res) => {
+  try {
+    const { email } = req.query;
+    const result = await Food.find(
+      { email: email },
+      "foodName foodImage price _id",
+    );
+    res.status(200).send(result);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
 // For creating a NewFood Item
 router.post("/foods", async (req, res) => {
   const { foodData } = req.body;
@@ -35,10 +51,12 @@ router.post("/foods", async (req, res) => {
     quantity: foodData.quantity,
     short_description: foodData.short_description,
   });
-  const result = await newFoodData.save();
+  await newFoodData.save();
   res.status(200).send({ message: "Successfully Added" });
 });
 // Orders API
+
+//For food order
 router.post("/orders", async (req, res) => {
   const { order, id } = req.body;
   const orderFromFoodColl = await Food.findById(id);
