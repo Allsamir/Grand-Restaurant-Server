@@ -29,7 +29,7 @@ router.get("/my-added-items", async (req, res) => {
     const { email } = req.query;
     const result = await Food.find(
       { email: email },
-      "foodName foodImage price _id",
+      "foodName foodImage price foodCategory _id",
     );
     res.status(200).send(result);
   } catch (err) {
@@ -54,6 +54,51 @@ router.post("/foods", async (req, res) => {
   await newFoodData.save();
   res.status(200).send({ message: "Successfully Added" });
 });
+
+// For updateding the Food Item
+
+router.patch("/updateFood", async (req, res) => {
+  try {
+    const { id } = req.query;
+    let { foodName, price, foodCategory, foodImage } = req.body;
+    const updateFoodItem = await Food.find({ _id: id });
+    console.log(updateFoodItem);
+    if (foodImage === "") {
+      foodImage = updateFoodItem.foodImage;
+    }
+    if (price === "") {
+      price = updateFoodItem.price;
+    }
+    if (foodCategory === "") {
+      foodCategory = updateFoodItem.foodCategory;
+    }
+    if (foodName === "") {
+      foodName = updateFoodItem.foodName;
+    }
+    await Food.findByIdAndUpdate(id, {
+      foodName: foodName,
+      price: price,
+      foodCategory: foodCategory,
+      foodImage: foodImage,
+    });
+    res.status(200).send({ message: "Updated Successfully" });
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+// For deleting Food
+
+router.delete("/deleteFood", async (req, res) => {
+  try {
+    const { id } = req.query;
+    await Food.findByIdAndDelete(id);
+    res.status(200).send({ message: "Successfully Deleted" });
+  } catch (err) {
+    console.error(err);
+  }
+});
+
 // Orders API
 
 //For food order
