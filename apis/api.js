@@ -45,19 +45,19 @@ router.post("/orders", async (req, res) => {
   if (orderFromFoodColl.quantity == 0) {
     return res
       .status(200)
-      .send({ message: "Sorry this item is not available now", status: false });
+      .send({ message: "Sorry this food is not available", status: false });
   }
 
   if (order.quantity > orderFromFoodColl.quantity) {
-    return res
-      .status(200)
-      .send({
-        message: "Can't order more than available quantity",
-        status: false,
-      });
+    return res.status(200).send({
+      message: "Can't order more than available quantity",
+      status: false,
+    });
   }
-
-  await Food.findByIdAndUpdate(id, { $inc: { count: 1 } }, { new: true });
+  const integerValueOfOrderQuantity = parseInt(order.quantity);
+  await Food.findByIdAndUpdate(id, {
+    $inc: { count: 1, quantity: -integerValueOfOrderQuantity },
+  });
   const newOrder = new Order({
     foodName: order.foodName,
     foodCategory: order.foodCategory,
