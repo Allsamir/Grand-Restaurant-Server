@@ -100,10 +100,24 @@ router.delete("/deleteFood", async (req, res) => {
 });
 
 // Orders API
+// For currentUser's orders list
+
+router.get("/my-orders", async (req, res) => {
+  try {
+    const { email } = req.query;
+    const myOrders = await Order.find(
+      { email: email },
+      "foodName foodImage price time date _id ",
+    );
+    res.status(200).send(myOrders);
+  } catch (err) {
+    console.error(err);
+  }
+});
 
 //For food order
 router.post("/orders", async (req, res) => {
-  const { order, id } = req.body;
+  const { order, id, foodImage } = req.body;
   const orderFromFoodColl = await Food.findById(id);
   if (orderFromFoodColl.quantity == 0) {
     return res
@@ -125,6 +139,7 @@ router.post("/orders", async (req, res) => {
     foodName: order.foodName,
     foodCategory: order.foodCategory,
     foodOrigin: order.foodOrigin,
+    foodImage: foodImage,
     email: order.email,
     name: order.name,
     price: order.price,
@@ -135,4 +150,17 @@ router.post("/orders", async (req, res) => {
   await newOrder.save();
   res.status(200).send({ message: "Successfully Orderd", status: true });
 });
+
+// For deleting order of currentUser
+
+router.delete("/deleteOrder", async (req, res) => {
+  try {
+    const { id } = req.query;
+    await Order.findByIdAndDelete(id);
+    res.status(200).send({ message: "Your order has been deleted" });
+  } catch (err) {
+    console.error(err);
+  }
+});
+
 module.exports = router;
