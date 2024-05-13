@@ -61,7 +61,10 @@ router.patch("/updateFood", async (req, res) => {
   try {
     const { id } = req.query;
     let { foodName, price, foodCategory, foodImage } = req.body;
-    const updateFoodItem = await Food.find({ _id: id });
+    const updateFoodItem = await Food.find(
+      { _id: id },
+      "foodImage price foodCategory foodName",
+    );
     console.log(updateFoodItem);
     if (foodImage === "") {
       foodImage = updateFoodItem.foodImage;
@@ -107,7 +110,7 @@ router.get("/my-orders", async (req, res) => {
     const { email } = req.query;
     const myOrders = await Order.find(
       { email: email },
-      "foodName foodImage price time date _id ",
+      "foodName foodImage price time date _id quantity",
     );
     res.status(200).send(myOrders);
   } catch (err) {
@@ -118,6 +121,7 @@ router.get("/my-orders", async (req, res) => {
 //For food order
 router.post("/orders", async (req, res) => {
   const { order, id, foodImage } = req.body;
+  console.log(order);
   const orderFromFoodColl = await Food.findById(id);
   if (orderFromFoodColl.quantity == 0) {
     return res
@@ -131,10 +135,6 @@ router.post("/orders", async (req, res) => {
       status: false,
     });
   }
-  const integerValueOfOrderQuantity = parseInt(order.quantity);
-  await Food.findByIdAndUpdate(id, {
-    $inc: { count: 1, quantity: -integerValueOfOrderQuantity },
-  });
   const newOrder = new Order({
     foodName: order.foodName,
     foodCategory: order.foodCategory,
@@ -148,6 +148,10 @@ router.post("/orders", async (req, res) => {
     time: order.time,
   });
   await newOrder.save();
+  const integerValueOfOrderQuantity = parseInt(order.quantity);
+  await Food.findByIdAndUpdate(id, {
+    $inc: { count: 1, quantity: -integerValueOfOrderQuantity },
+  });
   res.status(200).send({ message: "Successfully Orderd", status: true });
 });
 
