@@ -2,11 +2,8 @@ const mongoose = require("mongoose");
 
 const orderSchema = mongoose.Schema({
   foodName: String,
-  foodCategory: String,
-  foodOrigin: String,
   foodImage: String,
   email: String,
-  name: String,
   price: Number,
   quantity: Number,
   date: String,

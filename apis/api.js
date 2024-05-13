@@ -120,8 +120,7 @@ router.get("/my-orders", async (req, res) => {
 
 //For food order
 router.post("/orders", async (req, res) => {
-  const { order, id, foodImage } = req.body;
-  console.log(order);
+  const { order, id, quantity, email, time, date } = req.body;
   const orderFromFoodColl = await Food.findById(id);
   if (orderFromFoodColl.quantity == 0) {
     return res
@@ -129,26 +128,41 @@ router.post("/orders", async (req, res) => {
       .send({ message: "Sorry this food is not available", status: false });
   }
 
-  if (order.quantity > orderFromFoodColl.quantity) {
+  if (quantity > orderFromFoodColl.quantity) {
     return res.status(200).send({
       message: "Can't order more than available quantity",
       status: false,
     });
   }
+
+  const isTheFoodExistsInOrderDB = await Order.find({
+    foodName: order.foodName,
+  });
+  if (isTheFoodExistsInOrderDB.length !== 0) {
+    const integerValueOfOrderQuantity = parseInt(quantity);
+    await Order.findOneAndUpdate(
+      { foodName: order.foodName },
+      { $inc: { quantity: integerValueOfOrderQuantity } },
+    );
+    await Food.findByIdAndUpdate(id, {
+      $inc: { count: 1, quantity: -integerValueOfOrderQuantity },
+    });
+    return res
+      .status(200)
+      .send({ message: "Successfully Orderd", status: true });
+  }
+
   const newOrder = new Order({
     foodName: order.foodName,
-    foodCategory: order.foodCategory,
-    foodOrigin: order.foodOrigin,
-    foodImage: foodImage,
-    email: order.email,
-    name: order.name,
+    foodImage: order.foodImage,
+    email: email,
     price: order.price,
-    quantity: order.quantity,
-    date: order.date,
-    time: order.time,
+    quantity: quantity,
+    date: date,
+    time: time,
   });
   await newOrder.save();
-  const integerValueOfOrderQuantity = parseInt(order.quantity);
+  const integerValueOfOrderQuantity = parseInt(quantity);
   await Food.findByIdAndUpdate(id, {
     $inc: { count: 1, quantity: -integerValueOfOrderQuantity },
   });
