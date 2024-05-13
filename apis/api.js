@@ -9,6 +9,18 @@ router.get("/foods", async (req, res) => {
   const allFoods = await Food.find({});
   res.status(200).send(allFoods);
 });
+
+//For getting top food section's data
+
+router.get("/top-foods", async (req, res) => {
+  try {
+    const topFoods = await Food.find({ count: { $gt: 500 } }).limit(6);
+    res.send(topFoods);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
 // For search func in front-end
 router.get("/foodName", async (req, res) => {
   const { name } = req.query;
@@ -134,7 +146,7 @@ router.post("/orders", async (req, res) => {
       status: false,
     });
   }
-
+  // Just to increase the quantity of order
   const isTheFoodExistsInOrderDB = await Order.find({
     foodName: order.foodName,
   });
@@ -151,7 +163,7 @@ router.post("/orders", async (req, res) => {
       .status(200)
       .send({ message: "Successfully Orderd", status: true });
   }
-
+  // To create a new Order
   const newOrder = new Order({
     foodName: order.foodName,
     foodImage: order.foodImage,
