@@ -4,6 +4,12 @@ const router = express.Router();
 const Food = require("../models/food");
 const Order = require("../models/orders");
 const Review = require("../models/review");
+const jwt = require("jsonwebtoken");
+const cookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production" ? true : false,
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+};
 // Food API
 //For getting all the foodItems
 router.get("/foods", async (req, res) => {
@@ -222,4 +228,25 @@ router.post("/reviews", async (req, res) => {
     console.error(err);
   }
 });
+
+// JWT APIs
+
+router.post("/jwt", async (req, res) => {
+  const { email } = req.body;
+  const accessToken = jwt.sign(
+    {
+      email: email,
+    },
+    process.env.TOKEN_SECRET,
+    { expiresIn: "1h" },
+  );
+  res.cookie("accessToken", accessToken, cookieOptions).send({ success: true });
+});
+
+router.post("/logout", async (req, res) => {
+  res
+    .clearCookie("accessToken", { ...cookieOptions, maxAge: 0 })
+    .send({ success: true });
+});
+
 module.exports = router;

@@ -6,7 +6,12 @@ const api = require("./apis/api");
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://grand-resturant-01.web.app"],
+    credentials: true,
+  }),
+);
 app.use(express.json());
 mongoose
   .connect(process.env.DATABASE_URL)
