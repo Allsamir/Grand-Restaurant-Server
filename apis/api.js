@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const Food = require("../models/food");
 const Order = require("../models/orders");
+const Review = require("../models/review");
 // Food API
 //For getting all the foodItems
 router.get("/foods", async (req, res) => {
@@ -193,4 +194,34 @@ router.delete("/deleteOrder", async (req, res) => {
   }
 });
 
+// Review API
+
+// To get the Reviews of users
+
+router.get("/reviews", async (req, res) => {
+  try {
+    const { name } = req.query;
+    console.log(name);
+    const reviews = await Review.find({ name: name });
+    res.status(200).send(reviews);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+// To post a review in DB
+router.post("/reviews", async (req, res) => {
+  try {
+    const { name, feedback, imageURL } = req.body;
+    const newReview = new Review({
+      name: name,
+      feedback: feedback,
+      imageURL: imageURL,
+    });
+    await newReview.save();
+    res.status(200).send({ message: "Thank you for your feedback" });
+  } catch (err) {
+    console.error(err);
+  }
+});
 module.exports = router;
