@@ -14,8 +14,12 @@ const cookieOptions = {
 // Food API
 //For getting all the foodItems
 router.get("/foods", async (req, res) => {
-  const allFoods = await Food.find({});
-  res.status(200).send(allFoods);
+  const page = parseInt(req.query.page);
+  const itemsPerPage = parseInt(req.query.itemsPerPage);
+  const skip = (page - 1) * itemsPerPage;
+  const allFoods = await Food.find({}).skip(skip).limit(itemsPerPage);
+  const totalProducts = await Food.estimatedDocumentCount();
+  res.status(200).send({ totalProducts: totalProducts, foods: allFoods });
 });
 
 //For getting top food section's data
@@ -128,8 +132,11 @@ router.delete("/deleteFood", async (req, res) => {
 // Orders API
 // For currentUser's orders list
 
-router.get("/my-orders", async (req, res) => {
+router.get("/my-orders", verifyToken, async (req, res) => {
   try {
+    if (req.user.email !== req.query.email) {
+      return res.status(403).send({ message: "Forbidden Access" });
+    }
     const { email } = req.query;
     const myOrders = await Order.find(
       { email: email },
