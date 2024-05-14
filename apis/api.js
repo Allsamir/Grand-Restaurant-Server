@@ -200,9 +200,7 @@ router.delete("/deleteOrder", async (req, res) => {
 
 router.get("/reviews", async (req, res) => {
   try {
-    const { name } = req.query;
-    console.log(name);
-    const reviews = await Review.find({ name: name });
+    const reviews = await Review.find({});
     res.status(200).send(reviews);
   } catch (err) {
     console.error(err);
