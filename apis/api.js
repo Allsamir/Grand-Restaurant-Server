@@ -5,6 +5,7 @@ const Food = require("../models/food");
 const Order = require("../models/orders");
 const Review = require("../models/review");
 const jwt = require("jsonwebtoken");
+const verifyToken = require("../middlewares/verifyToken");
 const cookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production" ? true : false,
@@ -43,8 +44,11 @@ router.get("/singleFood", async (req, res) => {
 
 //For Currentuser's added food items
 
-router.get("/my-added-items", async (req, res) => {
+router.get("/my-added-items", verifyToken, async (req, res) => {
   try {
+    if (req.user.email !== req.query.email) {
+      return res.status(403).send({ message: "Forbidden Access" });
+    }
     const { email } = req.query;
     const result = await Food.find(
       { email: email },
