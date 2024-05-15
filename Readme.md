@@ -6,7 +6,7 @@ Welcome to Grand Restaurant Management WebApp! This web application provides a p
 - **Search Functionality**: Users can search for specific food items using the search feature.
 - **User Authentication**: Secure user authentication system allows users to register an account and login securely.
 - **Responsive Design**: The web app is designed to be responsive, ensuring a seamless experience across different devices and screen sizes.
-- **Live Demo**: Visit the live site [https://grand-resturant-01.web.app](#) to explore the features firsthand.
+- **Live Demo**: Visit the live site [https://grand-resturant-01.web.app] to explore the features firsthand.
 
 ## Getting Started
 
