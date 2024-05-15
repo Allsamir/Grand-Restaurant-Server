@@ -15,7 +15,7 @@ To get started with Grand Restaurant Management WebApp, follow these steps:
 1. Clone the repository to your local machine.
 2. Install the necessary dependencies by running `npm install`.
 3. Start the development server by running `npm start`.
-4. Visit `localhost:5173` in your browser to view the web app.
+4. Visit `localhost:3000` in your browser to view the web app.
 
 ## Technologies Used
 
