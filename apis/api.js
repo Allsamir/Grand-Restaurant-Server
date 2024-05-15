@@ -217,7 +217,10 @@ router.delete("/deleteOrder", async (req, res) => {
 
 router.get("/reviews", async (req, res) => {
   try {
-    const reviews = await Review.find({});
+    const page = parseInt(req.query.page);
+    const itemsPerPage = parseInt(req.query.itemsPerPage);
+    const skip = (page - 1) * itemsPerPage;
+    const reviews = await Review.find({}).skip(skip).limit(itemsPerPage);
     res.status(200).send(reviews);
   } catch (err) {
     console.error(err);
