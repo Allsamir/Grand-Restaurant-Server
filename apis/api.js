@@ -17,7 +17,10 @@ router.get("/foods", async (req, res) => {
   const page = parseInt(req.query.page);
   const itemsPerPage = parseInt(req.query.itemsPerPage);
   const skip = (page - 1) * itemsPerPage;
-  const allFoods = await Food.find({}).skip(skip).limit(itemsPerPage);
+  const category = req.query.category;
+  const allFoods = category
+    ? await Food.find({ foodCategory: category })
+    : await Food.find({}).skip(skip).limit(itemsPerPage);
   const totalProducts = await Food.estimatedDocumentCount();
   res.status(200).send({ totalProducts: totalProducts, foods: allFoods });
 });
